@@ -57,5 +57,5 @@ task :droplet_deploy => [:certificate_create, :droplet_create, :droplet_configur
   puts "New server #{SERVER} with IP #{IP} created"
 end
 desc "Destroy droplet and clean certificates from puppet master"
-task :droplet_decomission => [:certificate_clean, :droplet_destroy] do
+task :droplet_decommission => [:certificate_clean, :droplet_destroy] do
 end
