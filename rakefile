@@ -1,0 +1,61 @@
+# variables
+SERVER = ENV['SERVER']
+DOMAIN = ENV['DOMAIN']
+ENVIRONMENT = ENV['ENVIRONMENT'] # This is the puppet environment
+REGION = ENV['REGION']
+SIZE = ENV['SIZE'] # default should be 66 => 512M
+IDTEMPLATE = ENV['IDTEMPLATE'] # should  be 303619 for a i386 or 308287 for a amd64 debian image
+SCP = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=quiet '
+SSH = 'ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=quiet -l root'
+desc "Create certificate for droplets"
+task :certificate_create do
+  puts "Creating puppet certificates for new server #{SERVER} ......"
+  sh "sudo puppet cert generate #{SERVER}"
+  sh "sudo tar -czvf #{SERVER}.tgz /var/lib/puppet/ssl/certs/#{SERVER}.pem /var/lib/puppet/ssl/certs/ca.pem /var/lib/puppet/ssl/private_keys/#{SERVER}.pem"
+end
+desc "Clean certificate from puppetmaster"
+task :certificate_clean do
+  sh "sudo puppet cert clean #{SERVER}"
+  sh "rm -f #{SERVER}.tgz"
+  sh "sudo puppet node deactivate #{SERVER}"
+end
+desc "Creates a new droplet"
+task :droplet_create do
+  sh "tugboat create #{SERVER} -i #{IDTEMPLATE} -r #{REGION} -k 32527 -s #{SIZE}"
+# wait till droplet is in Active state
+  sh "tugboat wait #{SERVER} --state active"
+  TEMPIP=`tugboat info -n "#{SERVER}" |grep IP|awk {'print $2'}`
+  IP=TEMPIP.gsub(/\n/, "") #removing carriage return
+  puts "New deployed server's IP address: #{IP}"
+  puts "Sleeping 60 seconds to allow the VPS to boot"
+  sleep 60
+end
+task :droplet_configure do
+  puts "Deploying certificates ....... on #{IP}\:/#{SERVER}.tgz"
+  sh "#{SCP} #{SERVER}.tgz root@#{IP}\:/#{SERVER}.tgz"
+  sh "rm -f #{SERVER}.tgz"
+  commands = <<BOOTSTRAP
+cd / && tar -xzvf #{SERVER}.tgz && rm #{SERVER}.tgz && \
+echo search #{DOMAIN} >>/etc/resolv.conf && \
+apt-get update && apt-get dist-upgrade -y && \
+wget http://apt.puppetlabs.com/puppetlabs-release-wheezy.deb && \
+dpkg -i puppetlabs-release-wheezy.deb && rm -f puppetlabs-release-wheezy.deb \
+apt-get update && apt-get -y install puppet augeas-tools && \
+echo -e "set /files/etc/puppet/puppet.conf/main/pluginsync true\nset /files/etc/puppet/puppet.conf/main/environment #{ENVIRONMENT}\nsave" | augtool && \
+update-alternatives --set ruby /usr/bin/ruby1.8 
+BOOTSTRAP
+  sh "#{SSH} #{IP} '#{commands}'"
+sh "echo \"puppet agent --test --environment #{ENVIRONMENT} &\"|tugboat ssh -n #{SERVER}"
+end
+desc "Destroy droplet"
+task :droplet_destroy do
+  sh "tugboat destroy -n #{SERVER} -c"
+  sh "sudo puppet node deactivate #{SERVER}"
+end
+desc "Create droplet and deploy puppet"
+task :droplet_deploy => [:certificate_create, :droplet_create, :droplet_configure] do
+  puts "New server #{SERVER} with IP #{IP} created"
+end
+desc "Destroy droplet and clean certificates from puppet master"
+task :droplet_decomission => [:certificate_clean, :droplet_destroy] do
+end
