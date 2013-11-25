@@ -41,9 +41,9 @@ To deploy a new i386 server:
 
 ENVIRONMENT=production REGION=1 SIZE=66 SERVER=vps1.example.com DOMAIN=example.com rake droplet_deploy
 
-To decomission a server:
+To decommission a server:
 
-SERVER=vps1.example.com DOMAIN=example.com rake droplet_decomission
+SERVER=vps1.example.com DOMAIN=example.com rake droplet_decommission
 
 Live example:
 ------------
