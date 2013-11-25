@@ -7,7 +7,9 @@ This is a rakefile with several tasks to provision Debian i386/amd64 VPS with pu
 
 This script suposes:
  * The user your are running it has sudo access to run without password /usr/bin/puppet, /bin/tar
-   (ALL : ALL) NOPASSWD: /usr/bin/puppet, /bin/tar
+   
+   **Example of a sudoers file:** (ALL : ALL) NOPASSWD: /usr/bin/puppet, /bin/tar
+   
  * You have tugboat CLI installed and configured https://github.com/pearkes/tugboat
  * You are running it in the puppetmaster server, as it need access to the CA to create/clean the puppet certificates 
 
@@ -18,12 +20,17 @@ Variables:
 
 There are some variables than must be set in order to deploy the droplet with your specifications
 
-SERVER eg: vps1.example.com
-DOMAIN eg: example.com
-ENVIRONMENT eg: production/test/QA # This is the puppet environment
-REGION eg: 1 # for NY1
-SIZE eg: 66 # default for a 512 droplet
-IDTEMPLATE  should  be 303619 for a i386 or 308287 for a amd64 debian image 
+**SERVER** eg: vps1.example.com
+
+**DOMAIN** eg: example.com
+
+**ENVIRONMENT** eg: production/test/QA # This is the puppet environment
+
+**REGION** eg: 1 # for NY1
+
+**SIZE** eg: 66 # default for a 512 droplet
+
+**IDTEMPLATE**  should  be 303619 for a i386 or 308287 for a amd64 debian image 
 
 Usage:
 ------
