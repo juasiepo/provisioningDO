@@ -47,5 +47,6 @@ SERVER=vps1.example.com DOMAIN=example.com rake droplet_decomission
 
 Live example:
 ------------
+Bootstrapping a new VPS on a DigitalOcean droplet with puppet client up and running in **4m15secs**:
 
-http://shelr.tv/records/529330159660805b67000012
+http://shelr.tv/records/52934c959660805c3500001b
