@@ -50,3 +50,7 @@ Live example:
 Bootstrapping a new VPS on a DigitalOcean droplet with puppet client up and running in **4m15secs**:
 
 http://shelr.tv/records/52934c959660805c3500001b
+
+Website:
+--------
+http://www.elsotanillo.net/2013/11/bootstrapping-a-new-vps-on-a-digitalocean-droplet-with-puppet-client-up-and-running-in-4-mins-15-secs/
