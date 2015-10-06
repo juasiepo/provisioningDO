@@ -8,7 +8,7 @@ This is a rakefile with several tasks to provision Debian i386/amd64 VPS with pu
 This script suposes:
  * The user your are running it has sudo access to run without password /usr/bin/puppet, /bin/tar
    
-   **Example of a sudoers file:** (ALL : ALL) NOPASSWD: /usr/bin/puppet, /bin/tar
+   **Example of a sudoers file:** user ALL=(ALL) NOPASSWD: /usr/bin/puppet, /bin/tar
    
  * You have tugboat CLI installed and configured https://github.com/pearkes/tugboat
  * You are running it in the puppetmaster server, as it need access to the CA to create/clean the puppet certificates 
