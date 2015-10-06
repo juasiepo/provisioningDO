@@ -24,7 +24,7 @@ task :droplet_create do
   sh "tugboat create #{SERVER} -i #{IDTEMPLATE} -r #{REGION} -k 32527 -s #{SIZE}"
 # wait till droplet is in Active state
   sh "tugboat wait #{SERVER} --state active"
-  TEMPIP=`tugboat info -n "#{SERVER}" |grep IP|awk {'print $2'}`
+  TEMPIP=`tugboat info -n "#{SERVER}" |grep -m1 IP|awk {'print $2'}`
   IP=TEMPIP.gsub(/\n/, "") #removing carriage return
   puts "New deployed server's IP address: #{IP}"
   puts "Sleeping 60 seconds to allow the VPS to boot"
