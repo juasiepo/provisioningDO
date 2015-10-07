@@ -51,6 +51,7 @@ desc "Destroy droplet"
 task :droplet_destroy do
   sh "tugboat destroy -n #{SERVER} -c"
   sh "sudo puppet node deactivate #{SERVER}"
+  sh "sudo puppet node clean #{SERVER}"
 end
 desc "Create droplet and deploy puppet"
 task :droplet_deploy => [:certificate_create, :droplet_create, :droplet_configure] do
