@@ -45,7 +45,7 @@ echo -e "set /files/etc/puppet/puppet.conf/main/pluginsync true\nset /files/etc/
 update-alternatives --set ruby /usr/bin/ruby1.8 
 BOOTSTRAP
   sh "#{SSH} #{IP} '#{commands}'"
-sh "echo \"puppet agent --test --environment #{ENVIRONMENT} &\"|tugboat ssh -n #{SERVER}"
+sh "echo \"puppet agent --test --environment #{ENVIRONMENT} &\"|tugboat ssh -u root -n #{SERVER}"
 end
 desc "Destroy droplet"
 task :droplet_destroy do
