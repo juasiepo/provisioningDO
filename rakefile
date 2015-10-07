@@ -57,6 +57,7 @@ task :droplet_destroy do
   sh "tugboat destroy -n #{SERVER} -c"
   sh "sudo puppet node deactivate #{SERVER}"
   sh "sudo puppet node clean #{SERVER}"
+  sh "sudo rake -f /usr/share/puppet-dashboard/Rakefile RAILS_ENV=production node:del name=#{SERVER}"
 end
 desc "Create droplet and deploy puppet"
 task :droplet_deploy => [:certificate_create, :droplet_create, :droplet_configure] do
