@@ -47,7 +47,7 @@ echo " ==================== apt-get autoremove -y =============== " && \
 apt-get autoremove -y && \
 echo " ==================== puppet agent --enable =============== " && \
 puppet agent --enable
-update-alternatives --set ruby /usr/bin/ruby1.8 
+#update-alternatives --set ruby /usr/bin/ruby1.8 
 BOOTSTRAP
   sh "#{SSH} #{IP} '#{commands}'"
 sh "echo \"puppet agent --test --environment #{ENVIRONMENT} &\"|tugboat ssh -u root -n #{SERVER}"
