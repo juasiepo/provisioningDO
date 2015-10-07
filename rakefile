@@ -38,8 +38,8 @@ task :droplet_configure do
 cd / && tar -xzvf #{SERVER}.tgz && rm #{SERVER}.tgz && \
 echo search #{DOMAIN} >>/etc/resolv.conf && \
 apt-get update && apt-get dist-upgrade -y && \
-wget http://apt.puppetlabs.com/puppetlabs-release-wheezy.deb && \
-dpkg -i puppetlabs-release-wheezy.deb && rm -f puppetlabs-release-wheezy.deb \
+wget http://apt.puppetlabs.com/puppetlabs-release-jessie.deb && \
+dpkg -i puppetlabs-release-jessie.deb && rm -f puppetlabs-release-jessie.deb \
 apt-get update && apt-get -y install puppet augeas-tools && \
 echo -e "set /files/etc/puppet/puppet.conf/main/pluginsync true\nset /files/etc/puppet/puppet.conf/main/environment #{ENVIRONMENT}\nsave" | augtool && \
 update-alternatives --set ruby /usr/bin/ruby1.8 
