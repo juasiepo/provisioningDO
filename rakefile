@@ -18,6 +18,7 @@ task :certificate_clean do
   sh "sudo puppet cert clean #{SERVER}"
   sh "rm -f #{SERVER}.tgz"
   sh "sudo puppet node deactivate #{SERVER}"
+  sh "sudo puppet node clean #{SERVER}"
 end
 desc "Creates a new droplet"
 task :droplet_create do
