@@ -47,7 +47,7 @@ echo -e "set /files/etc/puppet/puppet.conf/main/pluginsync true\nset /files/etc/
 echo " ==================== apt-get autoremove -y =============== " && \
 apt-get autoremove -y && \
 echo " ==================== puppet agent --enable =============== " && \
-puppet agent --enable
+puppet agent --enable && \
 echo " ==================== Local facts ========================= " && \
 mkdir -p /etc/facter/facts.d && \
 echo " ==================== Server Role ========================= " && \
