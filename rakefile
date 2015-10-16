@@ -5,6 +5,7 @@ ENVIRONMENT = ENV['ENVIRONMENT'] # This is the puppet environment
 REGION = ENV['REGION']
 SIZE = ENV['SIZE'] # default should be 66 => 512M
 IDTEMPLATE = ENV['IDTEMPLATE'] # should  be 303619 for a i386 or 308287 for a amd64 debian image
+SERVER_ROLE = ENV['SERVER_ROLE']
 SCP = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=quiet '
 SSH = 'ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=quiet -l root'
 desc "Create certificate for droplets"
@@ -48,6 +49,11 @@ apt-get autoremove -y && \
 echo " ==================== puppet agent --enable =============== " && \
 puppet agent --enable
 #update-alternatives --set ruby /usr/bin/ruby1.8 
+echo " ==================== Local facts ========================= " && \
+mkdir -p /etc/facter/facts.d && \
+echo " ==================== Server Role ========================= " && \
+echo '---' > /etc/facter/facts.d/server_role.yaml && \
+echo "server_role: '#{SERVER_ROLE}'" >> /etc/facter/facts.d/server_role.yaml && \
 BOOTSTRAP
   sh "#{SSH} #{IP} '#{commands}'"
 sh "echo \"puppet agent --test --environment #{ENVIRONMENT} &\"|tugboat ssh -u root -n #{SERVER}"
