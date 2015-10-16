@@ -5,6 +5,7 @@ ENVIRONMENT = ENV['ENVIRONMENT'] # This is the puppet environment
 REGION = ENV['REGION']
 SIZE = ENV['SIZE'] # default should be 66 => 512M
 IDTEMPLATE = ENV['IDTEMPLATE'] # should  be 303619 for a i386 or 308287 for a amd64 debian image
+SERVER_ROLE = ENV['SERVER_ROLE']
 SCP = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=quiet '
 SSH = 'ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=quiet -l root'
 desc "Create certificate for droplets"
@@ -15,16 +16,17 @@ task :certificate_create do
 end
 desc "Clean certificate from puppetmaster"
 task :certificate_clean do
-  sh "sudo puppet cert clean #{SERVER}"
   sh "rm -f #{SERVER}.tgz"
-  sh "sudo puppet node deactivate #{SERVER}"
+#  sh "sudo puppet node deactivate #{SERVER}"
+#  sh "sudo puppet cert clean #{SERVER}"
   sh "sudo puppet node clean #{SERVER}"
+  sh "sudo rake -f /usr/share/puppet-dashboard/Rakefile RAILS_ENV=production node:del name=#{SERVER}"
 end
 desc "Creates a new droplet"
 task :droplet_create do
   sh "tugboat create #{SERVER} -i #{IDTEMPLATE} -r #{REGION} -k 32527 -s #{SIZE}"
 # wait till droplet is in Active state
-  sh "tugboat wait #{SERVER} --state active"
+  sh "tugboat wait -n #{SERVER} --state active"
   TEMPIP=`tugboat info -n "#{SERVER}" |grep -m1 IP|awk {'print $2'}`
   IP=TEMPIP.gsub(/\n/, "") #removing carriage return
   puts "New deployed server's IP address: #{IP}"
@@ -38,26 +40,28 @@ task :droplet_configure do
   commands = <<BOOTSTRAP
 cd / && tar -xzvf #{SERVER}.tgz && rm #{SERVER}.tgz && \
 echo search #{DOMAIN} >>/etc/resolv.conf && \
-apt-get update && apt-get dist-upgrade -y && \
 wget http://apt.puppetlabs.com/puppetlabs-release-jessie.deb && \
 dpkg -i puppetlabs-release-jessie.deb && rm -f puppetlabs-release-jessie.deb \
-apt-get update && apt-get -y install puppet augeas-tools && \
+apt-get update && apt-get dist-upgrade -y && \
+apt-get -y install puppet augeas-tools && \
 echo -e "set /files/etc/puppet/puppet.conf/main/pluginsync true\nset /files/etc/puppet/puppet.conf/main/environment #{ENVIRONMENT}\nsave" | augtool && \
 echo " ==================== apt-get autoremove -y =============== " && \
 apt-get autoremove -y && \
 echo " ==================== puppet agent --enable =============== " && \
-puppet agent --enable
-#update-alternatives --set ruby /usr/bin/ruby1.8 
+puppet agent --enable && \
+echo " ==================== Local facts ========================= " && \
+mkdir -p /etc/facter/facts.d && \
+echo " ==================== Server Role ========================= " && \
+echo '---' > /etc/facter/facts.d/server_role.yaml && \
+echo "server_role: '#{SERVER_ROLE}'" >> /etc/facter/facts.d/server_role.yaml && \
+puppet agent -t ; true
 BOOTSTRAP
-  sh "#{SSH} #{IP} '#{commands}'"
-sh "echo \"puppet agent --test --environment #{ENVIRONMENT} &\"|tugboat ssh -u root -n #{SERVER}"
+sh "#{SSH} #{IP} '#{commands}'"
+#sh "echo \"puppet agent -t & \"|tugboat ssh -u root -n #{SERVER}"
 end
 desc "Destroy droplet"
 task :droplet_destroy do
   sh "tugboat destroy -n #{SERVER} -c"
-  sh "sudo puppet node deactivate #{SERVER}"
-  sh "sudo puppet node clean #{SERVER}"
-  sh "sudo rake -f /usr/share/puppet-dashboard/Rakefile RAILS_ENV=production node:del name=#{SERVER}"
 end
 desc "Create droplet and deploy puppet"
 task :droplet_deploy => [:certificate_create, :droplet_create, :droplet_configure] do
