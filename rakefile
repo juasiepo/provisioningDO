@@ -16,11 +16,9 @@ task :certificate_create do
 end
 desc "Clean certificate from puppetmaster"
 task :certificate_clean do
-  sh "sudo puppet cert clean #{SERVER}"
   sh "rm -f #{SERVER}.tgz"
 #  sh "sudo puppet node deactivate #{SERVER}"
 #  sh "sudo puppet cert clean #{SERVER}"
-  sh "sudo puppet node deactivate #{SERVER}"
   sh "sudo puppet node clean #{SERVER}"
   sh "sudo rake -f /usr/share/puppet-dashboard/Rakefile RAILS_ENV=production node:del name=#{SERVER}"
 end
