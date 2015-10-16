@@ -55,7 +55,7 @@ echo '---' > /etc/facter/facts.d/server_role.yaml && \
 echo "server_role: '#{SERVER_ROLE}'" >> /etc/facter/facts.d/server_role.yaml && \
 puppet agent -t ; true
 BOOTSTRAP
-  sh "#{SSH} #{IP} '#{commands}'"
+sh "#{SSH} #{IP} '#{commands}'"
 #sh "echo \"puppet agent -t & \"|tugboat ssh -u root -n #{SERVER}"
 end
 desc "Destroy droplet"
