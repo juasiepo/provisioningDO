@@ -18,8 +18,11 @@ desc "Clean certificate from puppetmaster"
 task :certificate_clean do
   sh "sudo puppet cert clean #{SERVER}"
   sh "rm -f #{SERVER}.tgz"
+#  sh "sudo puppet node deactivate #{SERVER}"
+#  sh "sudo puppet cert clean #{SERVER}"
   sh "sudo puppet node deactivate #{SERVER}"
   sh "sudo puppet node clean #{SERVER}"
+  sh "sudo rake -f /usr/share/puppet-dashboard/Rakefile RAILS_ENV=production node:del name=#{SERVER}"
 end
 desc "Creates a new droplet"
 task :droplet_create do
@@ -61,9 +64,6 @@ end
 desc "Destroy droplet"
 task :droplet_destroy do
   sh "tugboat destroy -n #{SERVER} -c"
-  sh "sudo puppet node deactivate #{SERVER}"
-  sh "sudo puppet node clean #{SERVER}"
-  sh "sudo rake -f /usr/share/puppet-dashboard/Rakefile RAILS_ENV=production node:del name=#{SERVER}"
 end
 desc "Create droplet and deploy puppet"
 task :droplet_deploy => [:certificate_create, :droplet_create, :droplet_configure] do
