@@ -39,10 +39,10 @@ task :droplet_configure do
   commands = <<BOOTSTRAP
 cd / && tar -xzvf #{SERVER}.tgz && rm #{SERVER}.tgz && \
 echo search #{DOMAIN} >>/etc/resolv.conf && \
-apt-get update && apt-get dist-upgrade -y && \
 wget http://apt.puppetlabs.com/puppetlabs-release-jessie.deb && \
 dpkg -i puppetlabs-release-jessie.deb && rm -f puppetlabs-release-jessie.deb \
-apt-get update && apt-get -y install puppet augeas-tools && \
+apt-get update && apt-get dist-upgrade -y && \
+apt-get -y install puppet augeas-tools && \
 echo -e "set /files/etc/puppet/puppet.conf/main/pluginsync true\nset /files/etc/puppet/puppet.conf/main/environment #{ENVIRONMENT}\nsave" | augtool && \
 echo " ==================== apt-get autoremove -y =============== " && \
 apt-get autoremove -y && \
