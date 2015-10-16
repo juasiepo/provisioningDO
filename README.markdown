@@ -13,43 +13,46 @@ This script suposes:
  * You have tugboat CLI installed and configured https://github.com/pearkes/tugboat
  * You are running it in the puppetmaster server, as it need access to the CA to create/clean the puppet certificates 
 
-With few changes changes this rake file can be adapted to deploy ubuntu images too (for next release) and with some extra work to the rest of linux distributions
-
 Variables:
 ----------
 
 There are some variables than must be set in order to deploy the droplet with your specifications
 
+**SERVER_ROLE** eg: pentahopdi
+This is a local fact that will be populated and can be used to tag servers on deployment time
+facter -p server_role
+server_role:
 **SERVER** eg: vps1.example.com
 
 **DOMAIN** eg: example.com
 
 **ENVIRONMENT** eg: production/test/QA # This is the puppet environment
 
-**REGION** eg: 1 # for NY1
+**REGION** eg: 9 # for AMS3
 
 **SIZE** eg: 66 # default for a 512 droplet
 
-**IDTEMPLATE**  should  be 303619 for a i386 or 308287 for a amd64 debian image 
+**IDTEMPLATE**  should  be 12778278 for amd64 debian image 
 
 Usage:
 ------
 
 Example:
 
-To deploy a new i386 server:
+To deploy a new amd64 server:
 
-ENVIRONMENT=production REGION=1 SIZE=66 SERVER=vps1.example.com DOMAIN=example.com rake droplet_deploy
+SERVER_ROLE=pentahopdi ENVIRONMENT=production IDTEMPLATE=12778278 REGION=9 SIZE=66 SERVER=vps1.example.org DOMAIN=example.com rake droplet_deploy
+
 
 To decommission a server:
 
-SERVER=vps1.example.com DOMAIN=example.com rake droplet_decommission
+SERVER_ROLE=pentahopdi ENVIRONMENT=production IDTEMPLATE=12778278 REGION=9 SIZE=66 SERVER=vps1.example.org DOMAIN=example.com rake droplet_decommission
 
 Live example:
 ------------
 Bootstrapping a new VPS on a DigitalOcean droplet with puppet client up and running in **4m15secs**:
 
-http://shelr.tv/records/52934c959660805c3500001b
+https://asciinema.org/a/ex42dlm530maj5viplg6j8pr0
 
 Website:
 --------
